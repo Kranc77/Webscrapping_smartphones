@@ -2,6 +2,7 @@
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+import random
 
 ''' # - przypomnienie i powtórka 
 # scrapowanie kilku stron
@@ -21,9 +22,14 @@ for page in range(1, 4):
 
     print(df)
 '''
-HEADERS = {'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'}
+# dodanie wielu agentów
+user_agents_list = [
+    'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.83 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36']
 
-page = requests.get('https://www.x-kom.pl/g-4/c/1590-smartfony-i-telefony.html?f%5Bprice%5D%5Bfrom%5D=1000&f%5Bprice%5D%5Bto%5D=2000', headers=HEADERS)
+page = requests.get('https://www.x-kom.pl/g-4/c/1590-smartfony-i-telefony.html?f%5Bprice%5D%5Bfrom%5D=1000&f%5Bprice%5D%5Bto%5D=2000',
+                    headers={'User-Agent': random.choice(user_agents_list)})
 prices = []
 soup = BeautifulSoup(page.text, 'html.parser')
 if page.status_code == 200:
