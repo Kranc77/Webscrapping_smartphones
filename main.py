@@ -28,15 +28,22 @@ user_agents_list = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.83 Safari/537.36',
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36']
 
-page = requests.get('https://www.x-kom.pl/g-4/c/1590-smartfony-i-telefony.html?f%5Bprice%5D%5Bfrom%5D=1000&f%5Bprice%5D%5Bto%5D=2000',
-                    headers={'User-Agent': random.choice(user_agents_list)})
-prices = []
-soup = BeautifulSoup(page.text, 'html.parser')
-if page.status_code == 200:
+# strona z której są dane
+df = pd.DataFrame(columns=['name', 'price'])
+for i in range(1,4):
+    page = requests.get('https://www.x-kom.pl/g-4/c/1590-smartfony-i-telefony.html?page='+str(i)+'&f%5Bprice%5D%5Bfrom%5D=1000&f%5Bprice%5D%5Bto%5D=2000&f192-pamiec-ram=105773-8-gb&f192-pamiec-ram=135440-12-gb&f193-pamiec-wbudowana=27930-128-gb&f193-pamiec-wbudowana=75863-256-gb&f197-lacznosc=70098-5g',
+                        headers={'User-Agent': random.choice(user_agents_list)})
     soup = BeautifulSoup(page.text, 'html.parser')
-    prices = soup.find_all('span', class_='sc-6n68ef-0 sc-6n68ef-3 guFePW')
-else:
-    print(f'Błąd {page.status_code} podczas pobierania strony.')
+    if page.status_code == 200:
+        soup = BeautifulSoup(page.text, 'html.parser')
+        prices = soup.find_all('span', class_='sc-6n68ef-0 sc-6n68ef-3 guFePW')
+        name = soup.find_all('h3', class_='sc-16zrtke-0 kGLNun sc-1yu46qn-9 feSnpB')
+        df = pd.concat([df, pd.DataFrame({"name":list(name), "price":list(prices)})], ignore_index=True)
+        print(i)
+    else:
+        print(f'Błąd {page.status_code} podczas pobierania strony.')
 
-for i in prices:
-    print(i.text)
+
+print(df)
+df.to_csv('raw_data.csv', index=False)
+
